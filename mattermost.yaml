@@ -15,6 +15,7 @@ objects:
     source:
       git:
         uri: https://github.com/goern/mattermost-openshift
+        ref: "centos7"
       type: Git
     strategy:
       dockerStrategy:
