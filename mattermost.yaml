@@ -20,7 +20,7 @@ objects:
       dockerStrategy:
         from:
           kind: ImageStreamTag
-          name: rhel:latest
+          name: centos:latest
       type: Docker
     triggers:
     - type: ConfigChange
@@ -73,9 +73,9 @@ objects:
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    name: rhel
+    name: centos
   spec:
-    dockerImageRepository: registry.access.redhat.com/rhel7/rhel
+    dockerImageRepository: docker.io/centos
 - apiVersion: v1
   kind: Service
   metadata:

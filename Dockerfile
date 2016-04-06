@@ -1,6 +1,6 @@
 # This is a Dockerfile to be used with OpenShift3
 
-FROM rhel7
+FROM centos:7
 
 MAINTAINER Christoph Görn <goern@redhat.com>
 # based on the work of Takayoshi Kimura <tkimura@redhat.com>
@@ -25,9 +25,7 @@ LABEL io.projectatomic.nulecule.environment.required="MYSQL_USER, MYSQL_PASSWORD
       io.projectatomic.nulecule.environment.optional="VOLUME_CAPACITY" \
       io.projectatomic.nulecule.volume.data="/var/lib/psql/data,1Gi"
 
-RUN yum-config-manager --disable \* && \
-    yum-config-manager --enable rhel-7-server-rpms && \
-    yum update-minimal -y --security --sec-severity=Important --sec-severity=Critical --setopt=tsflags=nodocs && \
+RUN yum update -y --setopt=tsflags=nodocs && \
     yum install -y tar --setopt=tsflags=nodocs && \
     yum clean all
 
