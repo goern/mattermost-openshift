@@ -14,7 +14,7 @@ OpenShift Origin 3 up and running, including the capability to create a new proj
 ```
 oc new-project mattermost
 oc project mattermost
-oc new-app -f https://raw.githubusercontent.com/goern/mattermost-openshift/mattermost.yaml
+oc new-app -f https://raw.githubusercontent.com/goern/mattermost-openshift/centos7/mattermost.yaml
 ```
 
 You need to provision a PV:
