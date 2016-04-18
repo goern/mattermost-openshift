@@ -12,7 +12,7 @@ ENV MATTERMOST_VERSION 2.1.0
 LABEL Component="mattermost" \
       Name="projectatomic/mattermost-210-rhel7" \
       Version="2.1.0" \
-      Release="1"
+      Release="2"
 
 # Labels could be consumed by OpenShift
 LABEL io.k8s.description="Mattermost is an open source, self-hosted Slack-alternative" \
@@ -41,5 +41,7 @@ RUN chmod 777 /opt/mattermost/config/config.json && \
     chmod 777 /opt/mattermost/logs/ /opt/mattermost/data
 
 EXPOSE 8065
+
+WORKDIR /opt/mattermost
 
 CMD /opt/mattermost/bin/mattermost-launch.sh
