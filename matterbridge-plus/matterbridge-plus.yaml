@@ -17,9 +17,9 @@ objects:
         uri: https://github.com/goern/mattermost-openshift
         ref: "centos7"
       type: Git
+      contextDir: matterbridge-plus
     strategy:
       dockerStrategy:
-        dockerfilePath: matterbridge-plus/Dockerfile
         from:
           kind: ImageStreamTag
           name: centos:latest
@@ -63,3 +63,17 @@ parameters:
 - name: APPLICATION_NAME
   required: true
   value: matterbridge-plus
+- name: MATTERMOST_HOST
+  required: false
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+- name: MATTERMOST_PORT
+  required: false
+  value: 8065
+- name: MATTERMOST_BOT_USERNAME
+  required: false
+  value: matterbot
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+- name: MATTERMOST_BOT_PASSWORD
+  required: false
