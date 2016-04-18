@@ -16,10 +16,10 @@ objects:
       git:
         uri: https://github.com/goern/mattermost-openshift
         ref: "centos7"
-      contextDir: "matterbridge-plus"
       type: Git
     strategy:
       dockerStrategy:
+        dockerfilePath: matterbridge-plus/Dockerfile
         from:
           kind: ImageStreamTag
           name: centos:latest
