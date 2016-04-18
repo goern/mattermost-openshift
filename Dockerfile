@@ -6,17 +6,17 @@ MAINTAINER Christoph Görn <goern@redhat.com>
 # based on the work of Takayoshi Kimura <tkimura@redhat.com>
 
 ENV container docker
-ENV MATTERMOST_VERSION 2.1.0
+ENV MATTERMOST_VERSION 2.2.0
 
 # Labels consumed by Red Hat build service
 LABEL Component="mattermost" \
-      Name="projectatomic/mattermost-210-rhel7" \
-      Version="2.1.0" \
-      Release="2"
+      Name="projectatomic/mattermost-220-centos7" \
+      Version="2.2.0" \
+      Release="1"
 
 # Labels could be consumed by OpenShift
 LABEL io.k8s.description="Mattermost is an open source, self-hosted Slack-alternative" \
-      io.k8s.display-name="Mattermost 2.1.0" \
+      io.k8s.display-name="Mattermost 2.2.0" \
       io.openshift.expose-services="8065:mattermost" \
       io.openshift.tags="mattermost,slack"
 
@@ -30,9 +30,9 @@ RUN yum update -y --setopt=tsflags=nodocs && \
     yum clean all
 
 RUN cd /opt && \
-    curl -LO https://releases.mattermost.com/2.1.0/mattermost-team-2.1.0-linux-amd64.tar.gz && \
-    tar xf mattermost-team-2.1.0-linux-amd64.tar.gz &&\
-    rm mattermost-team-2.1.0-linux-amd64.tar.gz
+    curl -LO https://releases.mattermost.com/2.2.0/mattermost-team-2.2.0-linux-amd64.tar.gz && \
+    tar xf mattermost-team-2.2.0-linux-amd64.tar.gz &&\
+    rm mattermost-team-2.2.0-linux-amd64.tar.gz
 
 COPY mattermost-launch.sh /opt/mattermost/bin/mattermost-launch.sh
 COPY config.json /opt/mattermost/config/config.json
