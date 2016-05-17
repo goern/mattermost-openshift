@@ -185,7 +185,7 @@ parameters:
 - description: Database service name
   name: DATABASE_SERVICE_NAME
   required: true
-  value: mysql
+  value: db
 - description: Username for MySQL user that will be used for accessing the database
   from: user[A-Z0-9]{3}
   generate: expression

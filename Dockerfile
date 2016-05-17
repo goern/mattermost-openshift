@@ -26,7 +26,7 @@ LABEL io.projectatomic.nulecule.environment.required="MYSQL_USER, MYSQL_PASSWORD
       io.projectatomic.nulecule.volume.data="/var/lib/psql/data,1Gi"
 
 RUN yum update -y --setopt=tsflags=nodocs && \
-    yum install -y tar --setopt=tsflags=nodocs && \
+    yum install -y --setopt=tsflags=nodocs tar && \
     yum clean all
 
 RUN cd /opt && \
