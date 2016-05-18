@@ -6,7 +6,7 @@ objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata:
-    name: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-docker
   spec:
     output:
       to:
@@ -27,6 +27,40 @@ objects:
     - type: ConfigChange
     - imageChange: {}
       type: ImageChange
+- kind: "ImageStream"
+  apiVersion: "v1"
+  metadata:
+    description: "This is a GO1.6 builder"
+    name: "s2i-go-16"
+  spec:
+    dockerImageRepository: "goern/go-16-centos7"
+  tags:
+    - name: "latest"
+- kind: "BuildConfig"
+  apiVersion: "v1"
+  metadata:
+    name: "mattermost-s2i"
+    annotations:
+      description: "Defines how to build the mattermost platform"
+  spec:
+    completionDeadlineSeconds: 480
+    source:
+      type: "Git"
+      git:
+        uri: "https://github.com/mattermost/platform.git"
+    strategy:
+      type: "Source"
+      sourceStrategy:
+        from:
+          kind: "ImageStreamTag"
+          name: "s2i-go-16:latest"
+    output:
+      to:
+        kind: "ImageStreamTag"
+        name: "mattermost:latest"
+    triggers:
+      - type: "ImageChange"
+      - type: "ConfigChange"
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
@@ -114,7 +148,7 @@ objects:
     name: ${DATABASE_SERVICE_NAME}
   spec:
     accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
     resources:
       requests:
         storage: ${VOLUME_CAPACITY}

@@ -12,7 +12,7 @@ ENV MATTERMOST_VERSION 3.0.1
 LABEL Component="mattermost" \
       Name="centos/mattermost-301-centos7" \
       Version="3.0.1" \
-      Release="1"
+      Release="2"
 
 # Labels could be consumed by OpenShift
 LABEL io.k8s.description="Mattermost is an open source, self-hosted Slack-alternative" \
