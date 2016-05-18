@@ -212,6 +212,19 @@ objects:
       type: ImageChange
     - type: ConfigChange
   status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: "frontend"
+    labels:
+      app: "mattermost"
+  spec:
+    host: ""
+    to:
+      kind: "Service"
+      name: "${APPLICATION_NAME}"
+    tls:
+      termination: edge
 parameters:
 - name: APPLICATION_NAME
   required: true
