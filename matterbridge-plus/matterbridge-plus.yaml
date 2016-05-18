@@ -4,6 +4,15 @@ metadata:
   name: matterbridge-plus
 objects:
 - apiVersion: v1
+  kind: ImageStream
+  metadata:
+    description: "S2I builder image for Go1.6"
+        name: "s2i-go"
+      spec:
+        dockerImageRepository: "goern/go-16-centos7"
+      tags:
+        - name: "latest"
+- apiVersion: v1
   kind: BuildConfig
   metadata:
     name: ${APPLICATION_NAME}
@@ -19,11 +28,11 @@ objects:
       type: Git
       contextDir: matterbridge-plus
     strategy:
-      dockerStrategy:
+      type: Source
+      sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: centos:latest
-      type: Docker
+          name: go-16-centos7:latest
     triggers:
     - type: ConfigChange
     - imageChange: {}
