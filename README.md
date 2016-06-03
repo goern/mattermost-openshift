@@ -44,6 +44,8 @@ and a route:
 
 `oc expose service/mattermost --hostname=mattermost.example.com`
 
+If you want to deploy a MySQL database, you could either use the one provided
+by OpenShift or use the file `db.yaml`.
 
 ## Usage
 
