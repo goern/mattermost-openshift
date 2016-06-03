@@ -4,7 +4,30 @@ metadata:
   name: mattermost
 objects:
 - apiVersion: v1
-  kind: BuildConfig
+  kind: ImageStream
+  metadata:
+    name: ${APPLICATION_NAME}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: ${APPLICATION_NAME}-from-src
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: centos
+  spec:
+    dockerImageRepository: docker.io/centos
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    description: "This is a GO1.6 builder"
+    name: "s2i-go-16"
+  spec:
+    dockerImageRepository: "goern/go-16-centos7"
+  tags:
+    - name: "latest"
+- kind: BuildConfig
+  apiVersion: v1
   metadata:
     name: ${APPLICATION_NAME}-docker
   spec:
@@ -27,17 +50,8 @@ objects:
     - type: ConfigChange
     - imageChange: {}
       type: ImageChange
-- kind: "ImageStream"
-  apiVersion: "v1"
-  metadata:
-    description: "This is a GO1.6 builder"
-    name: "s2i-go-16"
-  spec:
-    dockerImageRepository: "goern/go-16-centos7"
-  tags:
-    - name: "latest"
-- kind: "BuildConfig"
-  apiVersion: "v1"
+- kind: BuildConfig
+  apiVersion: v1
   metadata:
     name: "mattermost-s2i"
     annotations:
@@ -57,12 +71,12 @@ objects:
     output:
       to:
         kind: "ImageStreamTag"
-        name: "mattermost:latest"
+        name: "mattermost-from-src:latest"
     triggers:
       - type: "ImageChange"
       - type: "ConfigChange"
-- apiVersion: v1
-  kind: DeploymentConfig
+- kind: DeploymentConfig
+  apiVersion: v1
   metadata:
     name: ${APPLICATION_NAME}
   spec:
@@ -101,18 +115,8 @@ objects:
           name: ${APPLICATION_NAME}:latest
       type: ImageChange
     - type: ConfigChange
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    name: ${APPLICATION_NAME}
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    name: centos
-  spec:
-    dockerImageRepository: docker.io/centos
-- apiVersion: v1
-  kind: Service
+- kind: Service
+  apiVersion: v1
   metadata:
     name: ${APPLICATION_NAME}
   spec:
@@ -123,27 +127,8 @@ objects:
       targetPort: 8065
     selector:
       deploymentconfig: ${APPLICATION_NAME}
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    name: ${DATABASE_SERVICE_NAME}
-  spec:
-    portalIP: ""
-    ports:
-    - name: mysql
-      nodePort: 0
-      port: 3306
-      protocol: TCP
-      targetPort: 3306
-    selector:
-      name: ${DATABASE_SERVICE_NAME}
-    sessionAffinity: None
-    type: ClusterIP
-  status:
-    loadBalancer: {}
-- apiVersion: v1
-  kind: PersistentVolumeClaim
+- kind: PersistentVolumeClaim
+  apiVersion: v1
   metadata:
     name: ${DATABASE_SERVICE_NAME}
   spec:
@@ -152,68 +137,8 @@ objects:
     resources:
       requests:
         storage: ${VOLUME_CAPACITY}
-- apiVersion: v1
-  kind: DeploymentConfig
-  metadata:
-    creationTimestamp: null
-    name: ${DATABASE_SERVICE_NAME}
-  spec:
-    replicas: 1
-    selector:
-      name: ${DATABASE_SERVICE_NAME}
-    strategy:
-      resources: {}
-      type: Recreate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          name: ${DATABASE_SERVICE_NAME}
-      spec:
-        containers:
-        - capabilities: {}
-          env:
-          - name: MYSQL_USER
-            value: ${MYSQL_USER}
-          - name: MYSQL_PASSWORD
-            value: ${MYSQL_PASSWORD}
-          - name: MYSQL_DATABASE
-            value: ${MYSQL_DATABASE}
-          image: mysql
-          imagePullPolicy: IfNotPresent
-          name: mysql
-          ports:
-          - containerPort: 3306
-            protocol: TCP
-          resources: {}
-          securityContext:
-            capabilities: {}
-            privileged: false
-          terminationMessagePath: /dev/termination-log
-          volumeMounts:
-          - mountPath: /var/lib/mysql/data
-            name: ${DATABASE_SERVICE_NAME}-data
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        volumes:
-        - name: ${DATABASE_SERVICE_NAME}-data
-          persistentVolumeClaim:
-            claimName: ${DATABASE_SERVICE_NAME}
-    triggers:
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - mysql
-        from:
-          kind: ImageStreamTag
-          name: mysql:5.6
-          namespace: openshift
-        lastTriggeredImage: ""
-      type: ImageChange
-    - type: ConfigChange
-  status: {}
-- apiVersion: v1
-  kind: Route
+- kind: Route
+  apiVersion: v1
   metadata:
     name: "frontend"
     labels:
@@ -229,25 +154,35 @@ parameters:
 - name: APPLICATION_NAME
   required: true
   value: mattermost
-- description: Database service name
+- description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  value: 512Mi
+- description: The name of the OpenShift Service exposed for the database.
+  displayName: Database Service Name
   name: DATABASE_SERVICE_NAME
   required: true
-  value: db
-- description: Username for MySQL user that will be used for accessing the database
+  value: mysql
+- description: Username for MySQL user that will be used for accessing the database.
+  displayName: MySQL User
   from: user[A-Z0-9]{3}
-  generate: expression
   name: MYSQL_USER
   required: true
-- description: Password for the MySQL user
+  value: mmuser
+- description: Password for the MySQL user.
+  displayName: MySQL Password
   from: '[a-zA-Z0-9]{16}'
   generate: expression
   name: MYSQL_PASSWORD
   required: true
-- description: Database name
+  value: mostest
+- description: Name of the MySQL database accessed.
+  displayName: MySQL Database Name
   name: MYSQL_DATABASE
   required: true
-  value: mattermost
-- description: Volume space available for data, e.g. 512Mi, 2Gi
+  value: mattermost_test
+- description: Volume space available for data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
   name: VOLUME_CAPACITY
   required: true
-  value: 1Gi
+  value: 512Mi
