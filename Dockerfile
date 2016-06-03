@@ -30,7 +30,7 @@ RUN yum update -y --setopt=tsflags=nodocs && \
     yum clean all
 
 RUN cd /opt && \
-    curl -LO https://releases.mattermost.com/3.0.1/mattermost-team-3.0.3-linux-amd64.tar.gz && \
+    curl -LO https://releases.mattermost.com/3.0.3/mattermost-team-3.0.3-linux-amd64.tar.gz && \
     tar xf mattermost-team-3.0.3-linux-amd64.tar.gz &&\
     rm mattermost-team-3.0.3-linux-amd64.tar.gz
 
