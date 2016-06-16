@@ -2,7 +2,7 @@
 
 FROM centos:7
 
-MAINTAINER Christoph Görn <goern@redhat.com>
+MAINTAINER Christoph Görn <goern@b4mad.net>
 # based on the work of Takayoshi Kimura <tkimura@redhat.com>
 
 ENV container docker
@@ -40,4 +40,4 @@ EXPOSE 8065
 
 WORKDIR /opt/mattermost
 
-CMD /opt/mattermost/bin/mattermost-launch.sh
+CMD [ /opt/mattermost/bin/mattermost-launch.sh ]
