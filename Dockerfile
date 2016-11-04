@@ -6,17 +6,18 @@ MAINTAINER Christoph Görn <goern@redhat.com>
 # based on the work of Takayoshi Kimura <tkimura@redhat.com>
 
 ENV container docker
-ENV MATTERMOST_VERSION 3.1.0
+ENV MATTERMOST_VERSION 3.4.0
+ENV MATTERMOST_VERSION_SHORT 340
 
 # Labels consumed by Red Hat build service
 LABEL Component="mattermost" \
-      Name="centos/mattermost-301-centos7" \
-      Version="3.1.0" \
+      Name="centos/mattermost-${MATTERMOST_VERSION_SHORT}-centos7" \
+      Version="${MATTERMOST_VERSION}" \
       Release="1"
 
 # Labels could be consumed by OpenShift
 LABEL io.k8s.description="Mattermost is an open source, self-hosted Slack-alternative" \
-      io.k8s.display-name="Mattermost 3.1.0" \
+      io.k8s.display-name="Mattermost {$MATTERMOST_VERSION}" \
       io.openshift.expose-services="8065:mattermost" \
       io.openshift.tags="mattermost,slack"
 
@@ -25,9 +26,9 @@ RUN yum update -y --setopt=tsflags=nodocs && \
     yum clean all
 
 RUN cd /opt && \
-    curl -LO https://releases.mattermost.com/3.1.0/mattermost-team-3.1.0-linux-amd64.tar.gz && \
-    tar xf mattermost-team-3.1.0-linux-amd64.tar.gz &&\
-    rm mattermost-team-3.1.0-linux-amd64.tar.gz
+    curl -LO https://releases.mattermost.com/${MATTERMOST_VERSION}/mattermost-team-${MATTERMOST_VERSION}-linux-amd64.tar.gz && \
+    tar xf mattermost-team-${MATTERMOST_VERSION}-linux-amd64.tar.gz &&\
+    rm mattermost-team-${MATTERMOST_VERSION}-linux-amd64.tar.gz
 
 COPY mattermost-launch.sh /opt/mattermost/bin/mattermost-launch.sh
 COPY config.json /opt/mattermost/config/config.json
