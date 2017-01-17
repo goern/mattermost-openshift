@@ -10,68 +10,33 @@ objects:
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    name: ${APPLICATION_NAME}-from-src
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    name: centos
+    name: s2i-mattermost
   spec:
-    dockerImageRepository: docker.io/centos
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    description: "This is a GO1.6 builder"
-    name: "s2i-go-16"
-  spec:
-    dockerImageRepository: "goern/go-16-centos7"
+    dockerImageRepository: "docker.io/goern/s2i-mattermost-310-centos7"
   tags:
-    - name: "latest"
+    - name: "v3.1.0-1"
 - kind: BuildConfig
   apiVersion: v1
   metadata:
-    name: ${APPLICATION_NAME}-docker
-  spec:
-    output:
-      to:
-        kind: ImageStreamTag
-        name: ${APPLICATION_NAME}:latest
-    source:
-      git:
-        uri: https://github.com/goern/mattermost-openshift
-        ref: "centos7"
-      type: Git
-    strategy:
-      dockerStrategy:
-        from:
-          kind: ImageStreamTag
-          name: centos:latest
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - imageChange: {}
-      type: ImageChange
-- kind: BuildConfig
-  apiVersion: v1
-  metadata:
-    name: "mattermost-s2i"
+    name: "mattermost"
     annotations:
-      description: "Defines how to build the mattermost platform"
+      description: "Defines how to build the mattermost platform using a S2I"
   spec:
     completionDeadlineSeconds: 480
     source:
       type: "Git"
       git:
-        uri: "https://github.com/mattermost/platform.git"
+        uri: "https://github.com/goern/mattermost-openshift"
     strategy:
       type: "Source"
       sourceStrategy:
         from:
           kind: "ImageStreamTag"
-          name: "s2i-go-16:latest"
+          name: "s2i-mattermost:v3.1.0-1"
     output:
       to:
         kind: "ImageStreamTag"
-        name: "mattermost-from-src:latest"
+        name: "mattermost:latest"
     triggers:
       - type: "ImageChange"
       - type: "ConfigChange"

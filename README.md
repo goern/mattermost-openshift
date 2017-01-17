@@ -2,7 +2,7 @@
 
 This is instant mattermost application for OpenShift Origin 3.
 
-The license applies to all files insinde this repository, not mattermost itself.
+The license applies to all files inside this repository, not mattermost itself.
 
 ## Prerequisites
 
@@ -12,6 +12,8 @@ OpenShift Origin 3 up and running, including the capability to create a new proj
 
 By now only a Docker build strategy based Mattermost application is provided,
 this may not be usable on OpenShift Online 3.
+
+This template and mattermost startup script `mattermost-launch.sh` only supports MySQL.
 
 ## Installation
 
