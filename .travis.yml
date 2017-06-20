@@ -1,0 +1,7 @@
+sudo: required
+
+services:
+  - docker
+
+after_success:
+  - docker build -f Dockerfile -t goern/mattermost-openshift:testing .
