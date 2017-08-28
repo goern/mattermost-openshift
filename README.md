@@ -51,7 +51,7 @@ Main step: deploy Mattermost app using the provided template: `oc new-app matter
 
 And a route:
 
-`oc expose service/mattermost --hostname=mattermost.example.com`
+`oc expose service/mattermost --labels=app=mattermost --hostname=mattermost.example.com`
 
 
 ## Usage
