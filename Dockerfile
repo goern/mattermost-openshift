@@ -11,7 +11,8 @@ ENV MATTERMOST_VERSION_SHORT 410
 
 # Labels consumed by Red Hat build service
 LABEL Component="mattermost" \
-      Name="centos/mattermost-${MATTERMOST_VERSION_SHORT}-centos7" \
+      name="centos/mattermost-${MATTERMOST_VERSION_SHORT}-centos7" \
+      vendor=Community \
       Version="${MATTERMOST_VERSION}" \
       Release="1"
 

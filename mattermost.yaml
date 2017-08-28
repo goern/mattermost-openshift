@@ -1,45 +1,45 @@
 apiVersion: v1
 kind: Template
+message: |-
+  The following service(s) have been created in your project: ${APPLICATION_NAME}.
+
+    Database User: from secret `mattermost`
+         Password: from secret `mattermost`
+    Database Name: ${MYSQL_DATABASE}
+
+  Please see https://github.com/goern/mattermost-openshift/blob/master/README.md for detailed infomation.
+
+  Dont forget to export service ${APPLICATION_NAME} as a route!
+
 metadata:
   name: mattermost
+  annotations:
+    description: |-
+      MySQL database service, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/mysql-container/blob/master/5.7/README.md.
+
+      NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
+    openshift.io/display-name: Mattermost
+    tags: mattermost
+    template.openshift.io/documentation-url: https://github.com/goern/mattermost-openshift/blob/master/README.md
+    template.openshift.io/long-description: This template provides a Mattermost service, it depends on a Secret and MySQL.
+    template.openshift.io/provider-display-name: Mattermost Community
+    template.openshift.io/support-url: https://github.com/goern/mattermost-openshift/issues
 objects:
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    name: ${APPLICATION_NAME}
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    name: s2i-mattermost
-  spec:
-    dockerImageRepository: "docker.io/goern/s2i-mattermost-310-centos7"
-  tags:
-    - name: "v3.1.0-1"
-- kind: BuildConfig
+- kind: ImageStream
   apiVersion: v1
   metadata:
-    name: "mattermost"
-    annotations:
-      description: "Defines how to build the mattermost platform using a S2I"
+    name: ${APPLICATION_NAME}
   spec:
-    completionDeadlineSeconds: 480
-    source:
-      type: "Git"
-      git:
-        uri: "https://github.com/goern/mattermost-openshift"
-    strategy:
-      type: "Source"
-      sourceStrategy:
-        from:
-          kind: "ImageStreamTag"
-          name: "s2i-mattermost:v3.1.0-1"
-    output:
-      to:
-        kind: "ImageStreamTag"
-        name: "mattermost:latest"
-    triggers:
-      - type: "ImageChange"
-      - type: "ConfigChange"
+    tags:  
+    - name: 4.1.0
+      annotations:
+        description: The Mattermost image from docker.io/goern/mattermost
+        openshift.io/display-name: Mattermost 4.1.0
+        tags: mattermost
+        version: "4.1.0"
+      from:
+        kind: DockerImage
+        name: docker.io/goern/mattermost:4.1.0
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
@@ -48,6 +48,9 @@ objects:
     selector:
       name: ${APPLICATION_NAME}
     replicas: 1
+    securityContext: {}
+    serviceAccount: mattermost
+    serviceAccountName: mattermost
     template:
       metadata:
         labels:
@@ -60,25 +63,53 @@ objects:
           ports:
           - containerPort: 8065
           env:
-          - name: DRIVER_NAME
-            value: mysql
-          - name: DATABASE_SERVICE_NAME
-            value: ${DATABASE_SERVICE_NAME}
-          - name: MYSQL_USER
-            value: ${MYSQL_USER}
-          - name: MYSQL_PASSWORD
-            value: ${MYSQL_PASSWORD}
-          - name: MYSQL_DATABASE
-            value: ${MYSQL_DATABASE}
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: user
+                name: mattermost-database
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: mattermost-database
+          - name: DB_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                key: db_database
+                name: mattermost
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8065
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: mattermost
+          ports:
+          - containerPort: 8065
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8065
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
     triggers:
-    - imageChangeParams:
+    - type: ImageChange
+      imageChangeParams:
         automatic: true
         containerNames:
         - ${APPLICATION_NAME}
         from:
           kind: ImageStreamTag
           name: ${APPLICATION_NAME}:latest
-      type: ImageChange
     - type: ConfigChange
 - kind: Service
   apiVersion: v1
@@ -92,62 +123,19 @@ objects:
       targetPort: 8065
     selector:
       deploymentconfig: ${APPLICATION_NAME}
-- kind: PersistentVolumeClaim
+- kind: ConfigMap
   apiVersion: v1
   metadata:
-    name: ${DATABASE_SERVICE_NAME}
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: ${VOLUME_CAPACITY}
-- kind: Route
-  apiVersion: v1
-  metadata:
-    name: "frontend"
-    labels:
-      app: "mattermost"
-  spec:
-    host: ""
-    to:
-      kind: "Service"
-      name: "${APPLICATION_NAME}"
-    tls:
-      termination: edge
+    name: mattermost
+  data:
+    db_database: ${MYSQL_DATABASE}
+    db_host: mysql.mattermost.svc
 parameters:
 - name: APPLICATION_NAME
   required: true
   value: mattermost
-- description: Maximum amount of memory the container can use.
-  displayName: Memory Limit
-  name: MEMORY_LIMIT
-  value: 512Mi
-- description: The name of the OpenShift Service exposed for the database.
-  displayName: Database Service Name
-  name: DATABASE_SERVICE_NAME
-  required: true
-  value: mysql
-- description: Username for MySQL user that will be used for accessing the database.
-  displayName: MySQL User
-  from: user[A-Z0-9]{3}
-  name: MYSQL_USER
-  required: true
-  value: mmuser
-- description: Password for the MySQL user.
-  displayName: MySQL Password
-  from: '[a-zA-Z0-9]{16}'
-  generate: expression
-  name: MYSQL_PASSWORD
-  required: true
-  value: mostest
 - description: Name of the MySQL database accessed.
   displayName: MySQL Database Name
   name: MYSQL_DATABASE
   required: true
   value: mattermost_test
-- description: Volume space available for data, e.g. 512Mi, 2Gi.
-  displayName: Volume Capacity
-  name: VOLUME_CAPACITY
-  required: true
-  value: 512Mi

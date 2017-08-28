@@ -6,53 +6,68 @@ The license applies to all files inside this repository, not Mattermost itself.
 
 ## Prerequisites
 
-OpenShift Origin 3 up and running, including the capability to create a new project.
+OpenShift Origin 3 up and running, including the capability to create a new project. The simple way is to use `oc cluster up` or [Minishift](https://docs.openshift.org/latest/minishift/getting-started/installing.html)
+
+And you need to deploy MySQL, described below.
 
 ## Disclaimer
 
-By now only a Docker build strategy based Mattermost application is provided,
-this may not be usable on OpenShift Online 3.
+By now only a Docker build strategy based Mattermost application is provided, this may not be usable on OpenShift Online 3.
 
 This template and Mattermost startup script `mattermost-launch.sh` only supports MySQL.
 
+Support for this work is provided as 'best can do' via GitHub.
+
 ## Installation
 
+### Configuration
+
+First of all, lets create a project for mattermost: `oc new-project mattermost`
+
+We will use a [ServiceAccount](https://docs.openshift.com/container-platform/3.6/dev_guide/service_accounts.html) to run Mattermost, this account will have access to the database [Secrets](https://docs.openshift.com/container-platform/3.6/dev_guide/secrets.html):
+
 ```
-oc new-project mattermost
-oc new-app -f https://raw.githubusercontent.com/goern/mattermost-openshift/centos7/mattermost.yaml
+oc create --filename mattermost.yaml # to import the template
+oc create serviceaccount mattermost # our deployment will use this
+oc create secret generic mattermost-database --from-literal=user=mmuser --from-literal=password=mostest 
+oc secrets link mattermost mattermost-database # make the secret available to the serviceaccount
 ```
 
-You need to provision a PV:
-```
-# cat mattermost-pv.yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mysql
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
-  nfs:
-    path: /srv/nfs/path
-    server: nfs-server
-  persistentVolumeReclaimPolicy: Retain
+### Deployment
 
-# oc create -f mattermost-pv.yaml
+As Mattermost depends on it, lets deploy MySQL to it using a persistent configuration: `oc new-app mysql-persistent --labels=app=mattermost --param=MYSQL_USER=mmuser --param=MYSQL_PASSWORD=mostest --param=MYSQL_DATABASE=mattermost_test`
+
+Next step, import the current image from docker.io and tag it as latest:
+
+```
+oc import-image docker.io/goern/mattermost:4.1.0 --confirm
+oc tag mattermost:4.1.0 mattermost:latest
 ```
 
-and a route:
+If you build your own image dont forget to push it to OpenShift's ImageStreamTag `mattermost/mattermost:latest`.
+
+Main step: deploy Mattermost app using the provided template: `oc new-app mattermost --labels=app=mattermost`. Deployments and Services will be created for you.
+
+
+And a route:
 
 `oc expose service/mattermost --hostname=mattermost.example.com`
 
-If you want to deploy a MySQL database, you could either use the one provided
-by OpenShift or use the file `db.yaml`.
 
 ## Usage
 
 Point your browser at `mattermost.example.com`, the first user you create will
 be an Administrator of Mattermost.
+
+
+## Updates
+
+If a new Mattermost container image is available, or if you build one yourself, you need to import it to the ImageStream and retag latest to it. This will automatically deploy the new version.
+
+
+## Building
+
+Building the required Moby container image involves a simple `docker build --rm --tag docker.io/goern/mattermost:4.1.0 .`. You can see that this is just an example... repositoyname and version may vary :)
 
 
 ## Copyright
