@@ -10,7 +10,6 @@ message: |-
   Please see https://github.com/goern/mattermost-openshift/blob/master/README.md for detailed infomation.
 
   Dont forget to export service ${APPLICATION_NAME} as a route!
-
 metadata:
   name: mattermost
   annotations:
@@ -28,25 +27,25 @@ objects:
 - kind: ImageStream
   apiVersion: v1
   metadata:
-    name: ${APPLICATION_NAME}
+    name: '${APPLICATION_NAME}'
   spec:
     tags:  
-    - name: 4.1.0
+    - name: 4.3.1
       annotations:
         description: The Mattermost image from docker.io/goern/mattermost
-        openshift.io/display-name: Mattermost 4.1.0
+        openshift.io/display-name: Mattermost 4.3.1
         tags: mattermost
-        version: "4.1.0"
+        version: "4.3.1"
       from:
         kind: DockerImage
-        name: docker.io/goern/mattermost:4.1.0
+        name: docker.io/goern/mattermost:4.3.1
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
-    name: ${APPLICATION_NAME}
+    name: '${APPLICATION_NAME}'
   spec:
     selector:
-      name: ${APPLICATION_NAME}
+      name: '${APPLICATION_NAME}'
     replicas: 1
     securityContext: {}
     serviceAccount: mattermost
@@ -54,14 +53,12 @@ objects:
     template:
       metadata:
         labels:
-          name: ${APPLICATION_NAME}
+          name: '${APPLICATION_NAME}'
       spec:
         containers:
-        - image: ${APPLICATION_NAME}
+        - image: '${APPLICATION_NAME}'
           imagePullPolicy: Always
-          name: ${APPLICATION_NAME}
-          ports:
-          - containerPort: 8065
+          name: '${APPLICATION_NAME}'
           env:
           - name: DB_USER
             valueFrom:
@@ -87,7 +84,6 @@ objects:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
-          name: mattermost
           ports:
           - containerPort: 8065
             protocol: TCP
@@ -113,15 +109,15 @@ objects:
       imageChangeParams:
         automatic: true
         containerNames:
-        - ${APPLICATION_NAME}
+        - '${APPLICATION_NAME}'
         from:
           kind: ImageStreamTag
-          name: ${APPLICATION_NAME}:latest
+          name: '${APPLICATION_NAME}:latest'
     - type: ConfigChange
 - kind: Service
   apiVersion: v1
   metadata:
-    name: ${APPLICATION_NAME}
+    name: '${APPLICATION_NAME}'
   spec:
     ports:
     - name: 8065-tcp
@@ -129,13 +125,13 @@ objects:
       protocol: TCP
       targetPort: 8065
     selector:
-      deploymentconfig: ${APPLICATION_NAME}
+      deploymentconfig: '${APPLICATION_NAME}'
 - kind: ConfigMap
   apiVersion: v1
   metadata:
     name: mattermost
   data:
-    db_database: ${MYSQL_DATABASE}
+    db_database: '${MYSQL_DATABASE}'
     db_host: mysql.mattermost.svc
 parameters:
 - name: APPLICATION_NAME
