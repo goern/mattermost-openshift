@@ -40,8 +40,8 @@ As Mattermost depends on it, lets deploy MySQL to it using a persistent configur
 Next step, import the current image from docker.io and tag it as latest:
 
 ```
-oc import-image docker.io/goern/mattermost:4.1.0 --confirm
-oc tag mattermost:4.1.0 mattermost:latest
+oc import-image docker.io/goern/mattermost:4.3.1 --confirm
+oc tag mattermost:4.3.1 mattermost:latest
 ```
 
 If you build your own image dont forget to push it to OpenShift's ImageStreamTag `mattermost/mattermost:latest`.
@@ -67,7 +67,7 @@ If a new Mattermost container image is available, or if you build one yourself, 
 
 ## Building
 
-Building the required Moby container image involves a simple `docker build --rm --tag docker.io/goern/mattermost:4.1.0 .`. You can see that this is just an example... repositoyname and version may vary :)
+Building the required Moby container image involves a simple `docker build --rm --tag docker.io/goern/mattermost:4.3.1 .`. You can see that this is just an example... repositoyname and version may vary :)
 
 
 ## Copyright
