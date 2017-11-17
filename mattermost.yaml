@@ -140,7 +140,7 @@ parameters:
   value: mattermost
 - name: MATTERMOST_VERSION
   required: true
-  value: 4.4.1
+  value: v4.4.1
 - description: Name of the MySQL database accessed.
   displayName: MySQL Database Name
   name: MYSQL_DATABASE
