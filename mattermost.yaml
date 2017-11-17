@@ -33,13 +33,13 @@ objects:
     tags:  
     - name: '${MATTERMOST_VERSION}'
       annotations:
-        description: The Mattermost image from docker.io/goern/mattermost
+        description: The Mattermost image from quay.io/goern/mattermost-openshift
         openshift.io/display-name: 'Mattermost ${MATTERMOST_VERSION}'
         tags: mattermost
         version: '${MATTERMOST_VERSION}'
       from:
         kind: DockerImage
-        name: 'docker.io/goern/mattermost:${MATTERMOST_VERSION}'
+        name: 'quay.io/goern/mattermost-openshift:${MATTERMOST_VERSION}'
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:

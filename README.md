@@ -1,5 +1,8 @@
 # Mattermost for OpenShift Origin 3
 
+[![Build Status](https://travis-ci.org/goern/mattermost-openshift.svg?branch=master)](https://travis-ci.org/goern/mattermost-openshift)
+[![Container Image Repository on Quay](https://quay.io/repository/goern/mattermost-openshift/status)](https://quay.io/repository/goern/mattermost-openshift)
+
 This is instant Mattermost application for OpenShift Origin 3.
 
 The license applies to all files inside this repository, not Mattermost itself.
@@ -37,11 +40,11 @@ oc secrets link mattermost mattermost-database # make the secret available to th
 
 As Mattermost depends on it, lets deploy MySQL to it using a persistent configuration: `oc new-app mysql-persistent --labels=app=mattermost --param=MYSQL_USER=mmuser --param=MYSQL_PASSWORD=mostest --param=MYSQL_DATABASE=mattermost_test`
 
-Next step, import the current image from docker.io and tag it as latest:
+Next step, import the current image from quay.io and tag it as latest:
 
 ```
-oc import-image docker.io/goern/mattermost:4.3.1 --confirm
-oc tag mattermost:4.3.1 mattermost:latest
+oc import-image quay.io/goern/mattermost-openshift:4.4.1 --confirm
+oc tag mattermost:4.4.1 mattermost:latest
 ```
 
 If you build your own image dont forget to push it to OpenShift's ImageStreamTag `mattermost/mattermost:latest`.
@@ -67,7 +70,7 @@ If a new Mattermost container image is available, or if you build one yourself, 
 
 ## Building
 
-Building the required Moby container image involves a simple `docker build --rm --tag docker.io/goern/mattermost:4.3.1 .`. You can see that this is just an example... repositoyname and version may vary :)
+Building the required Moby container image involves a simple `docker build --rm --tag mattermost:4.4.1 .`. You can see that this is just an example... repositoyname and version may vary :)
 
 
 ## Copyright
