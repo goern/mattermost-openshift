@@ -1,0 +1,27 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+feedparser = "*"
+dockerfile-parse = "*"
+semver = "*"
+pygithub = "*"
+gitpython = "*"
+
+
+[dev-packages]
+
+"autopep8" = "*"
+pylint = "*"
+pytest = "*"
+python-dotenv = "*"
+
+
+[requires]
+
+python_version = "3.6"
