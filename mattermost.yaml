@@ -3,9 +3,10 @@ kind: Template
 message: |-
   The following service(s) have been created in your project: ${APPLICATION_NAME}.
 
-    Database User: from secret `mattermost`
-         Password: from secret `mattermost`
-    Database Name: ${MYSQL_DATABASE}
+  Mattermost Version: ${MATTERMOST_VERSION}
+       Database User: from secret `mattermost`
+            Password: from secret `mattermost`
+       Database Name: ${MYSQL_DATABASE}
 
   Please see https://github.com/goern/mattermost-openshift/blob/master/README.md for detailed infomation.
 
@@ -30,15 +31,15 @@ objects:
     name: '${APPLICATION_NAME}'
   spec:
     tags:  
-    - name: 4.3.1
+    - name: '${MATTERMOST_VERSION}'
       annotations:
         description: The Mattermost image from docker.io/goern/mattermost
-        openshift.io/display-name: Mattermost 4.3.1
+        openshift.io/display-name: 'Mattermost ${MATTERMOST_VERSION}'
         tags: mattermost
-        version: "4.3.1"
+        version: '${MATTERMOST_VERSION}'
       from:
         kind: DockerImage
-        name: docker.io/goern/mattermost:4.3.1
+        name: 'docker.io/goern/mattermost:${MATTERMOST_VERSION}'
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
@@ -137,6 +138,9 @@ parameters:
 - name: APPLICATION_NAME
   required: true
   value: mattermost
+- name: MATTERMOST_VERSION
+  required: true
+  value: 4.4.1
 - description: Name of the MySQL database accessed.
   displayName: MySQL Database Name
   name: MYSQL_DATABASE
