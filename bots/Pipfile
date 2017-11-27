@@ -11,7 +11,8 @@ feedparser = "*"
 dockerfile-parse = "*"
 semver = "*"
 pygithub = "*"
-gitpython = "*"
+GitPython = "2.1.7"
+python-dotenv = "*"
 
 
 [dev-packages]
@@ -19,7 +20,6 @@ gitpython = "*"
 "autopep8" = "*"
 pylint = "*"
 pytest = "*"
-python-dotenv = "*"
 
 
 [requires]

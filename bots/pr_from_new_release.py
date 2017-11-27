@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os 
+import os
 import feedparser
 import semver
 import shutil
@@ -20,6 +20,7 @@ git_url = 'https://github.com/goern/mattermost-openshift.git'
 LOCAL_WORK_COPY = './mattermost-openshift-workdir'
 SSH_CMD = 'ssh -i id_deployment_key'
 load_dotenv(find_dotenv())
+
 
 def main():
     """lets start our task"""
@@ -51,7 +52,7 @@ def main():
         target_branch = 'bots-life/update-to-' + release_version
 
         if not pr_in_progress(target_branch):
-            # patch_and_push(dfp, r, target_branch)
+            patch_and_push(dfp, r, target_branch, release_version)
             cleanup(LOCAL_WORK_COPY)
 
             create_pr_to_master(target_branch)
@@ -71,7 +72,8 @@ def cleanup(directory):
     except FileNotFoundError as fnfe:
         print("Non Fatal Error: " + str(fnfe))
 
-def patch_and_push(dfp, repository, target_branch):
+
+def patch_and_push(dfp, repository, target_branch, release_version):
     """patch the Dockerfile and push the created branch to origin"""
 
     # lets create a new branch
@@ -102,7 +104,8 @@ def patch_and_push(dfp, repository, target_branch):
 
 def pr_in_progress(target_branch):
     """pr_in_progress() will check if there is an open PR from target_branch to master"""
-    return True
+    return False
+
 
 def create_pr_to_master(target_branch):
     """create a github pr from target_branch to master"""
@@ -113,6 +116,7 @@ def create_pr_to_master(target_branch):
 
     repo.create_pull('automated update',
                      'This PR is generated as part of an automated update triggered by a new Mattermost release.', 'master', target_branch)
+
 
 if __name__ == '__main__':
     main()
