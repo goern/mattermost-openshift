@@ -6,8 +6,8 @@ MAINTAINER Christoph Görn <goern@b4mad.net>
 # based on the work of Takayoshi Kimura <tkimura@redhat.com>
 
 ENV container docker
-ENV MATTERMOST_VERSION 4.7.0
-ENV MATTERMOST_VERSION_SHORT 470
+ENV MATTERMOST_VERSION 4.7.2
+ENV MATTERMOST_VERSION_SHORT 472
 
 # Labels consumed by Red Hat build service
 LABEL Component="mattermost" \
