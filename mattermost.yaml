@@ -33,13 +33,13 @@ objects:
     tags:  
     - name: '${MATTERMOST_VERSION}'
       annotations:
-        description: The Mattermost image from quay.io/goern/mattermost-openshift
+        description: The Mattermost image from CentOS Registry
         openshift.io/display-name: 'Mattermost ${MATTERMOST_VERSION}'
         tags: mattermost
         version: '${MATTERMOST_VERSION}'
       from:
         kind: DockerImage
-        name: 'quay.io/goern/mattermost-openshift:${MATTERMOST_VERSION}'
+        name: 'registry.centos.org/mattermost/mattermost-team:${MATTERMOST_VERSION}'
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
@@ -61,20 +61,30 @@ objects:
           imagePullPolicy: Always
           name: '${APPLICATION_NAME}'
           env:
-          - name: DB_USER
+          - name: MM_DB_USER
             valueFrom:
               secretKeyRef:
                 key: user
                 name: mattermost-database
-          - name: DB_PASSWORD
+          - name: MM_DB_PASS
             valueFrom:
               secretKeyRef:
                 key: password
                 name: mattermost-database
-          - name: DB_DATABASE
+          - name: MM_DB_NAME
             valueFrom:
               configMapKeyRef:
                 key: db_database
+                name: mattermost
+          - name: MM_DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                key: db_host
+                name: mattermost
+          - name: MM_DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                key: db_dport
                 name: mattermost
           livenessProbe:
             failureThreshold: 3
@@ -132,17 +142,18 @@ objects:
   metadata:
     name: mattermost
   data:
-    db_database: '${MYSQL_DATABASE}'
-    db_host: mysql.mattermost.svc
+    db_database: '${DATABASE_NAME}'
+    db_host: postgresql
+    db_port: 5432
 parameters:
 - name: APPLICATION_NAME
   required: true
   value: mattermost
 - name: MATTERMOST_VERSION
   required: true
-  value: v4.4.1
-- description: Name of the MySQL database accessed.
-  displayName: MySQL Database Name
-  name: MYSQL_DATABASE
+  value: v4.7.1
+- description: Name of the database to be accessed.
+  displayName: Database Name
+  name: DATABASE_NAME
   required: true
   value: mattermost_test
