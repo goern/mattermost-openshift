@@ -44,7 +44,7 @@ oc tag mattermost-team:5.2-PCP mattermost-team:latest
 
 If you build your own image dont forget to push it to OpenShift's ImageStreamTag `mattermost/mattermost-team:latest`.
 
-Main step: deploy Mattermost app using the provided template: `oc new-app mattermost --labels=app=mattermost`. Deployments and Services will be created for you.
+Main step: deploy Mattermost app using the provided template: `oc new-app --template=mattermost --labels=app=mattermost`. Deployments and Services will be created for you.
 
 And a route:
 
