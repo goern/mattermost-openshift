@@ -6,7 +6,7 @@ message: |-
   Mattermost Version: ${MATTERMOST_VERSION}
        Database User: from secret `mattermost`
             Password: from secret `mattermost`
-       Database Name: ${MYSQL_DATABASE}
+       Database Name: ${DATABASE_NAME}
 
   Please see https://github.com/goern/mattermost-openshift/blob/master/README.md for detailed infomation.
 
@@ -15,13 +15,11 @@ metadata:
   name: mattermost
   annotations:
     description: |-
-      MySQL database service, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/mysql-container/blob/master/5.7/README.md.
-
-      NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
+      This is Mattermost, have fun!
     openshift.io/display-name: Mattermost
     tags: mattermost
     template.openshift.io/documentation-url: https://github.com/goern/mattermost-openshift/blob/master/README.md
-    template.openshift.io/long-description: This template provides a Mattermost service, it depends on a Secret and MySQL.
+    template.openshift.io/long-description: This template provides a Mattermost service, it depends on a Secret and PostgreSQL.
     template.openshift.io/provider-display-name: Mattermost Community
     template.openshift.io/support-url: https://github.com/goern/mattermost-openshift/issues
 objects:
@@ -144,14 +142,14 @@ objects:
   data:
     db_database: '${DATABASE_NAME}'
     db_host: postgresql
-    db_port: 5432
+    db_port: '5432'
 parameters:
 - name: APPLICATION_NAME
   required: true
   value: mattermost
 - name: MATTERMOST_VERSION
   required: true
-  value: v4.7.1
+  value: 5.2-PCP
 - description: Name of the database to be accessed.
   displayName: Database Name
   name: DATABASE_NAME

@@ -6,15 +6,13 @@ The license applies to all files inside this repository, not Mattermost itself.
 
 ## Prerequisites
 
-OpenShift Origin 3 up and running, including the capability to create a new project. The simple way is to use `oc cluster up` or [Minishift](https://docs.openshift.org/latest/minishift/getting-started/installing.html)
+OpenShift Origin 3 up and running, including the capability to create a new project. The simple way is to use `oc cluster up` or [Minishift](https://docs.okd.io/latest/minishift/getting-started/installing.html)
 
-And you need to deploy MySQL, described below.
+And you need to deploy PostgreSQL, described below.
 
 ## Disclaimer
 
-By now only a Docker build strategy based Mattermost application is provided, this may not be usable on OpenShift Online 3.
-
-This template and Mattermost startup script `mattermost-launch.sh` only supports MySQL.
+This template and Mattermost startup script `mattermost-launch.sh` only supports PostgreSQL.
 
 Support for this work is provided as 'best can do' via GitHub.
 
@@ -22,9 +20,9 @@ Support for this work is provided as 'best can do' via GitHub.
 
 ### Configuration
 
-First of all, lets create a project for mattermost: `oc new-project mattermost`
+First of all, let's create a project for mattermost: `oc new-project mattermost`
 
-We will use a [ServiceAccount](https://docs.openshift.com/container-platform/3.7/dev_guide/service_accounts.html) to run Mattermost, this account will have access to the database [Secrets](https://docs.openshift.com/container-platform/3.7/dev_guide/secrets.html):
+We will use a [ServiceAccount](https://docs.okd.io/3.10/dev_guide/service_accounts.html) to run Mattermost, this account will have access to the database [Secrets](https://docs.okd.io/3.10/dev_guide/secrets.html):
 
 ```
 oc create --filename mattermost.yaml # to import the template
@@ -35,18 +33,18 @@ oc secrets link mattermost mattermost-database # make the secret available to th
 
 ### Deployment
 
-As Mattermost depends on it, lets deploy Postgres...
+As Mattermost depends on it, let's deploy PostgreSQL... 
 
 Next step, import the current image from quay.io and tag it as latest:
 
 ```
-oc import-image registry.centos.org/mattermost/mattermost-team:4.7.1 --confirm
-oc tag mattermost-team:4.7.1 mattermost-team:latest
+oc import-image registry.centos.org/mattermost/mattermost-team:5.2-PCP --confirm
+oc tag mattermost-team:5.2-PCP mattermost-team:latest
 ```
 
 If you build your own image dont forget to push it to OpenShift's ImageStreamTag `mattermost/mattermost-team:latest`.
 
-Main step: deploy Mattermost app using the provided template: `oc new-app mattermost --labels=app=mattermost`. Deployments and Services will be created for you.
+Main step: deploy Mattermost app using the provided template: `oc new-app --template=mattermost --labels=app=mattermost`. Deployments and Services will be created for you.
 
 And a route:
 
