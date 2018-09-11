@@ -142,7 +142,7 @@ objects:
   data:
     db_database: '${DATABASE_NAME}'
     db_host: postgresql
-    db_port: 5432
+    db_port: '5432'
 parameters:
 - name: APPLICATION_NAME
   required: true
