@@ -4,6 +4,21 @@ This is instant Mattermost application for OpenShift Origin 3.
 
 The license applies to all files inside this repository, not Mattermost itself.
 
+## TL;DR
+```
+oc new-project mattermost
+oc new-app postgresql-persistent -p POSTGRESQL_USER=mmuser -p POSTGRESQL_PASSWORD=mostest \
+                                 -p POSTGRESQL_DATABASE=mattermost -p MEMORY_LIMIT=128Mi
+oc create --filename mattermost.yaml
+oc create serviceaccount mattermost
+oc create secret generic mattermost-database --from-literal=user=mmuser --from-literal=password=mostest
+oc secrets link mattermost mattermost-database
+
+oc new-app --template=mattermost --labels=app=mattermost
+oc expose service/mattermost --labels=app=mattermost
+
+```
+
 ## Prerequisites
 
 OpenShift Origin 3 up and running, including the capability to create a new project. The simple way is to use `oc cluster up` or [Minishift](https://docs.okd.io/latest/minishift/getting-started/installing.html)
