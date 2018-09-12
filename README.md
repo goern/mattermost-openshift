@@ -19,6 +19,16 @@ oc expose service/mattermost --labels=app=mattermost
 
 ```
 
+### Warning: Security
+Mattermost images has hardocoded 1001 user to run with. This is bad practice when running containers in OpenShift which prefers restricted SCC which uses a random uid greater than 1000000.
+To workaround it, we can put the mattermost service account in anyuid scc and adjust the uid range for the namespace to run with.
+
+```
+oc adm policy add-scc-to-user anyuid system:serviceaccount:mattermost:mattermost
+oc annotate namespace mattermost openshift.io/sa.scc.uid-range=1001/1001 --overwrite
+```
+
+
 ## Prerequisites
 
 OpenShift Origin 3 up and running, including the capability to create a new project. The simple way is to use `oc cluster up` or [Minishift](https://docs.okd.io/latest/minishift/getting-started/installing.html)
