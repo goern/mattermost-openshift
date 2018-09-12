@@ -79,10 +79,10 @@ objects:
               configMapKeyRef:
                 key: db_host
                 name: mattermost
-          - name: MM_DB_HOST
+          - name: MM_DB_PORT
             valueFrom:
               configMapKeyRef:
-                key: db_dport
+                key: db_port
                 name: mattermost
           livenessProbe:
             failureThreshold: 3
